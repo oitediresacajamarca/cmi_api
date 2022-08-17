@@ -21,7 +21,7 @@ class consulta(View):
             table_i= connection.table('PERIODO_'+str(periodo)+':SEGUIMIENTO_'+curso)
         
         
-            filter_text="SingleColumnValueFilter('CMI_2022','ipress adscripcion',=, 'binary:"+ipress+"',false,true)"
+            filter_text="SingleColumnValueFilter('CMI_2022','renipress_adscripcion',=, 'binary:"+ipress+"',false,true)"
             print(filter_text)
             for key, data in table_i.scan(filter=filter_text):
           
