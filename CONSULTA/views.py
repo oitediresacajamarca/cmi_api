@@ -25,7 +25,7 @@ class consulta(View):
             print(filter_text)
             for key, data in table_i.scan(filter=filter_text):
           
-              
+                
                 activida=[]
                 data_fil={}
                 data_fil=filter(lambda ac:self.util(ac,id_indicador),data.items())
@@ -99,5 +99,14 @@ class consulta(View):
     def util(self,uno,dos):
         uno[0].decode('utf-8').split('$')
         indi=uno[0].decode('utf-8').split('$')[0].split(':')[1]
+        if indi==dos: 
+            return True
+        if dos=='Apellido_Paterno_Paciente':
+            return True
+        if dos=='Apellido_Materno_Paciente':
+            return True
+        if dos=='Nombres_Paciente':
+            return True
+        
         
         return indi==dos
