@@ -78,7 +78,7 @@ class migracion_con(View):
                     
             dicres['CMI_2022:ipress_adscripcion']=item['IPRESS']            
             dicres['CMI_2022:renipress_adscripcion']=item['renipress']
-            dicres['CMI_2022:Fecha_Nacimiento_Paciente']=item['Fecha_Nacimiento_Paciente']
+           
             dicres['CMI_2022:Apellido_Paterno_Paciente']=item['Apellido_Paterno_Paciente']
             dicres['CMI_2022:Apellido_Materno_Paciente']=item['Apellido_Materno_Paciente']
             dicres['CMI_2022:Nombres_Paciente']=item['Nombres_Paciente']
