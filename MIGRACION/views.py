@@ -75,7 +75,7 @@ class migracion_con(View):
       
         for item in lista.values():
             dicres={}
-            print(item)            
+                    
             dicres['CMI_2022:ipress_adscripcion']=item['IPRESS']            
             dicres['CMI_2022:renipress_adscripcion']=item['renipress']
             dicres['CMI_2022:Fecha_Nacimiento_Paciente']=item['Fecha_Nacimiento_Paciente']
