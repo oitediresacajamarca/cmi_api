@@ -1,3 +1,4 @@
+from pickle import TRUE
 from django.shortcuts import render
 from http.client import HTTPResponse
 from django.shortcuts import render
@@ -18,51 +19,83 @@ class consulta(View):
         try:
             connection=self.Crea_coneccion()
             
+            print('PERIODO_'+str(periodo)+':SEGUIMIENTO_'+curso)
+            
             table_i= connection.table('PERIODO_'+str(periodo)+':SEGUIMIENTO_'+curso)
         
-        
-            filter_text="SingleColumnValueFilter('CMI_2022','renipress_adscripcion',=, 'binary:"+ipress+"',false,true)"
+            filter_text="SingleColumnValueFilter('CMI_2022','renipress_adscripcion',=, 'binary:"+ipress+"',false,false)"
             print(filter_text)
-            for key, data in table_i.scan(filter=filter_text):
+            for key, data in table_i.scan(filter=filter_text,limit=20):
+                persona={'numero_docuemnto':key.decode('utf-8')}
           
                 
                 activida=[]
                 data_fil={}
+             
                 data_fil=filter(lambda ac:self.util(ac,id_indicador),data.items())
                 for key1,data1 in data_fil:
                     
                     indices=key1.decode('utf-8').split('$')
-                    indicador=indices[1]
-                    campo= indices[2]
+                    es_encabesado=False
+                    valor_encabesado=''
+                    encabesado=''
+                    
+                    indicador=10000000
+                    campo='marte'
+                    if len(indices)>1:
+                        indicador=indices[1]
+                        campo= indices[2]
+                    else:
+                        encabesado=key1.decode('utf-8').split(':')[1]
+                        valor_encabesado=data1.decode('utf-8')
+                        es_encabesado=True
+                        
+                        
+                    
                     existe=False
                     
                     indice_encontrar=1000
                     
                   
-                    for i in range(0, len(activida)):
-                       
-                      
+                    for i in range(0, len(activida)):           
+                        
+                        
+                                      
 
-                        if activida[i]["indicador"]== indices[1]:
+                        if activida[i]["indicador"]== indicador :
                             existe=True 
                             indice_encontrar=i
-                            activida[indice_encontrar][indices[2]]=data1.decode('utf-8')                    
+                            if es_encabesado==False:
+                                activida[indice_encontrar][campo]=data1.decode('utf-8')                    
                            
                         else:
                             existe=False
                     
-                    if existe==False:
-                        activida.append({"indicador":indices[1]})
-                        activida[len(activida)-1][indices[2]]=data1.decode('utf-8')
-                        activida[len(activida)-1]["padre"]=id_indicador
+                    if existe==False :
+                        if campo!='marte':
+                            activida.append({"indicador":indicador})
+                        
+                            activida[len(activida)-1][campo]=data1.decode('utf-8')
+                            activida[len(activida)-1]["padre"]=id_indicador
+                        if campo!='marte':
+                            activida[len(activida)-1][encabesado]=valor_encabesado
+                    
+                   
+                   
+                    if es_encabesado==True:
+                        
+                        persona[encabesado]=valor_encabesado
+                       
+                        
                             
                   
                         
                        
 
                 if len(activida)!=0:
+                    persona['actividades']=activida
 
-                    lisg.append({'numero_documento':key.decode('utf-8'),'actividades':activida})
+                    lisg.append(persona)
          
             connection.close()
             
@@ -73,22 +106,13 @@ class consulta(View):
         
 
 
-            '''
-                lisg[key.decode('utf-8')]=json.dumps(data)
-                print('============================================================')
-                print(type(data))
-                
-                print('============================================================')
-            
-            
-            '''
 
 
         return JsonResponse(lisg,safe=False)
     
     def Crea_coneccion(self):
         try:
-            print(os.environ.get('SERVER_HBASE'))
+            
             con=  hb.Connection(os.environ.get('SERVER_HBASE'),port=int(os.environ.get('PORT_HBASE')) )
             
             return con
@@ -97,15 +121,24 @@ class consulta(View):
             print (e)
             con.close()
     def util(self,uno,dos):
+     
         uno[0].decode('utf-8').split('$')
         indi=uno[0].decode('utf-8').split('$')[0].split(':')[1]
+  
+        
+    
         if indi==dos: 
             return True
-        if dos=='Apellido_Paterno_Paciente':
+        if uno[0].decode('utf-8').split(':')[1]=='Apellido_Paterno_Paciente':
+        
+            
             return True
-        if dos=='Apellido_Materno_Paciente':
+        if uno[0].decode('utf-8').split(':')[1]=='Apellido_Materno_Paciente':
+   
             return True
-        if dos=='Nombres_Paciente':
+        if uno[0].decode('utf-8').split(':')[1]=='Nombres_Paciente':
+            return True
+        if uno[0].decode('utf-8').split(':')[1]=='renipress_adscripcion':
             return True
         
         

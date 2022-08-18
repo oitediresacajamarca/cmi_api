@@ -96,7 +96,10 @@ class migracion_con(View):
             if(item['id_indicador'] is None):
                 item['id_indicador']=''
             else :
-                item['id_indicador']=item['id_indicador']            
+                item['id_indicador']=item['id_indicador'] 
+            
+           
+              
             
             dicres['CMI_2022:'+str(item['id_indicador'])+self.separador+str(item['id_actividad'])+self.separador+'fecha_atencion']=item['fecha_atencion']
             
@@ -107,6 +110,9 @@ class migracion_con(View):
                 connection=self.crea_coneccion()
                 table_i= connection.table('PERIODO_'+str(periodo)+':SEGUIMIENTO_'+nombre_curso)
                 table_i.put(item['numero_documento'],dicres)
+                if item['id_indicador']==207 :
+                    print(dicres)
+                    print('===========\n')
                
                 connection.close()
             except Exception as e:
