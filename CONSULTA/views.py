@@ -140,6 +140,8 @@ class consulta(View):
             return True
         if uno[0].decode('utf-8').split(':')[1]=='renipress_adscripcion':
             return True
+        if uno[0].decode('utf-8').split(':')[1]=='ipress_adscripcion':
+            return True
         
         
         return indi==dos
