@@ -12,16 +12,24 @@ import os
 # Create your views here.
 class consulta(View):
     separador='$'
-    def get(self, request,agnio,mes,ipress,id_indicador,curso):        
+    def get(self, request,agnio,mes,id_indicador,curso):        
         
         body_unicode = request.body.decode('utf-8')
    
         dta=json.loads(body_unicode)
-        print(dta['IPRESS'])
+     
+        cadena_filtro="(QualifierFilter(=, 'regexstring:renipress_adscripcion') OR QualifierFilter(=, 'regexstring:ipress_adscripcion') OR QualifierFilter(=, 'regexstring:"+id_indicador+"$*')) AND ("
         
-
-   
-   
+        for ip in dta['IPRESS']:
+         
+            if cadena_filtro=="(QualifierFilter(=, 'regexstring:renipress_adscripcion') OR QualifierFilter(=, 'regexstring:ipress_adscripcion') OR QualifierFilter(=, 'regexstring:"+id_indicador+"$*')) AND (":
+                cadena_filtro=cadena_filtro+" SingleColumnValueFilter('CMI_2022','renipress_adscripcion',=, 'binary:"+ip+"',false,false)"
+            else:
+                cadena_filtro=cadena_filtro+" OR SingleColumnValueFilter('CMI_2022','renipress_adscripcion',=, 'binary:"+ip+"',false,false)"
+        
+        
+        cadena_filtro=cadena_filtro+" )"
+           
         periodo=str(int(agnio)*100+int(mes))
         lisg=[]
         try:
@@ -31,10 +39,10 @@ class consulta(View):
             
             table_i= connection.table('PERIODO_'+str(periodo)+':SEGUIMIENTO_'+curso)
         
-            filter_text="SingleColumnValueFilter('CMI_2022','renipress_adscripcion',=, 'binary:"+ipress+"',false,false)"
-            print(filter_text)
-            for key, data in table_i.scan(filter=filter_text,limit=20):
-                persona={'numero_docuemnto':key.decode('utf-8')}          
+            print(cadena_filtro)
+         
+            for key, data in table_i.scan(filter=cadena_filtro):
+                persona={'numero_documento':key.decode('utf-8')}          
                 
                 activida=[]
                 data_fil={}
@@ -121,18 +129,20 @@ class consulta(View):
         try:
             
             con=  hb.Connection(os.environ.get('SERVER_HBASE'),port=int(os.environ.get('PORT_HBASE')) )
+            print('conneccion exitosa')
             
             return con
         except Exception as e:
-            print('error de coneccion')
+            print('error de coneccion 132')
             print (e)
             con.close()
+            
     def util(self,uno,dos):
      
         uno[0].decode('utf-8').split('$')
         indi=uno[0].decode('utf-8').split('$')[0].split(':')[1]
   
-        
+        return True
     
         if indi==dos: 
             return True
