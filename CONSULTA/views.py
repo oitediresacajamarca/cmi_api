@@ -12,8 +12,16 @@ import os
 # Create your views here.
 class consulta(View):
     separador='$'
-    def get(self, request,agnio,mes,ipress,id_indicador,curso):
+    def get(self, request,agnio,mes,ipress,id_indicador,curso):        
         
+        body_unicode = request.body.decode('utf-8')
+   
+        dta=json.loads(body_unicode)
+        print(dta['IPRESS'])
+        
+
+   
+   
         periodo=str(int(agnio)*100+int(mes))
         lisg=[]
         try:
@@ -26,8 +34,7 @@ class consulta(View):
             filter_text="SingleColumnValueFilter('CMI_2022','renipress_adscripcion',=, 'binary:"+ipress+"',false,false)"
             print(filter_text)
             for key, data in table_i.scan(filter=filter_text,limit=20):
-                persona={'numero_docuemnto':key.decode('utf-8')}
-          
+                persona={'numero_docuemnto':key.decode('utf-8')}          
                 
                 activida=[]
                 data_fil={}
