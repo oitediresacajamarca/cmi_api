@@ -4,6 +4,7 @@ from http.client import HTTPResponse
 from django.shortcuts import render
 from django.views import View
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 import happybase as hb
 import json
@@ -12,7 +13,8 @@ import os
 # Create your views here.
 class consulta(View):
     separador='$'
-    def get(self, request,agnio,mes,id_indicador,curso):        
+    @csrf_exempt
+    def post(self, request,agnio,mes,id_indicador,curso):        
         
         body_unicode = request.body.decode('utf-8')
    
